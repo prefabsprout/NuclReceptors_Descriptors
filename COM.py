@@ -32,14 +32,10 @@ def COM_protein(str_file):
     structure = parser.get_structure('protein', str_file)
     atom_struct = structure.get_atoms()
 
-    total_mass = 0
-    for chains in structure:
-        for chain in chains:
-            for residue in chain:
-                for atom in residue:
-                    total_mass += ATOMIC_WEIGHTS[atom.get_name()[0]]
-
     atoms = [([coord * ATOMIC_WEIGHTS[atom.get_name()[0]] for coord in list(atom.get_coord())]) for atom in atom_struct]
+
+    atom_struct = structure.get_atoms()
+    total_mass = sum([ATOMIC_WEIGHTS[atom.get_name()[0]] for atom in atom_struct])
 
     return [coord / total_mass for coord in np.sum(atoms, axis=0)]
 

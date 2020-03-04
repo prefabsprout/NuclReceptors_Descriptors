@@ -56,6 +56,3 @@ def COM_helix(str_file):
         helix_com.append([coord / total_mass for coord in np.sum(atoms, axis=0)])
 
     return helix_com
-
-
-print(COM_helix('/home/stephen/Desktop/3b0t.cif'))

@@ -1,11 +1,12 @@
 from Bio.PDB import *
 from COM import COM_protein
 import numpy as np
+import os
 
 
 def COM_Calpha_angle(str_file, hel):
     protCOM = COM_protein(str_file)
-    parser = MMCIFParser()
+    parser = PDBParser()
     structure = parser.get_structure('protein', str_file)
 
     model = structure[0]
@@ -29,11 +30,17 @@ def COM_Calpha_angle(str_file, hel):
                 if atom.get_name() == 'CA':
                     CA_coords.append(atom.get_coord())
 
-    OHel1 = np.array(protCOM) - CA_coords[0]
-    OHel2 = np.array(protCOM) - CA_coords[1]
+    OHel1 = CA_coords[0] - np.array(protCOM)
+    OHel2 = CA_coords[1] - np.array(protCOM)
 
-    OHels = np.prod(OHel1) + np.prod(OHel2)
+    OHels = np.dot(OHel1,OHel2)
 
-    OHel1abs = np.sqrt(np.sum(OHel1 ** 2))
-    OHel2abs = np.sqrt(np.sum(OHel2 ** 2))
+    OHel1abs = np.linalg.norm(OHel1)
+    OHel2abs = np.linalg.norm(OHel2)
     return OHels / (OHel1abs * OHel2abs)
+
+
+dir = '/home/stephen/Desktop/PDB' # Enter your PDB directory
+helnum = int() # Enter helix number
+for filename in os.listdir(dir):
+    print(COM_Calpha_angle(os.path.join(dir, filename),helnum))

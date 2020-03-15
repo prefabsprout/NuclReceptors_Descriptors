@@ -1,6 +1,6 @@
 from Bio.PDB import *
 import numpy as np
-
+import os
 
 def COM_protein(str_file):
 
@@ -28,7 +28,7 @@ def COM_protein(str_file):
                       'HS': 269, 'MT': 278, 'DS': 281, 'RG': 281, 'CN': 285, 'UUT': 286, 'FL': 289,
                       'UUP': 288, 'LV': 293, 'UUS': 294}
 
-    parser = MMCIFParser()
+    parser = PDBParser()
     structure = parser.get_structure('protein', str_file)
     atom_struct = structure.get_atoms()
 
@@ -40,4 +40,6 @@ def COM_protein(str_file):
     return [coord / total_mass for coord in np.sum(atoms, axis=0)]
 
 
-print(COM_protein('/home/stephen/Desktop/3b0t.cif'))
+# dir = '/home/stephen/Desktop/PDB' # Enter your PDB directory
+# for filename in os.listdir(dir):
+#     print(COM_protein(os.path.join(dir, filename)))

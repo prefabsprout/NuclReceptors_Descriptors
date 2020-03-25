@@ -40,6 +40,12 @@ def COM_protein(str_file):
     return [coord / total_mass for coord in np.sum(atoms, axis=0)]
 
 
-# dir = '/home/stephen/Desktop/PDB' # Enter your PDB directory
-# for filename in os.listdir(dir):
-#     print(COM_protein(os.path.join(dir, filename)))
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-i', dest='input_file',
+                    required=True,
+                    type=str)
+args = parser.parse_args()
+
+in_file_path = args.input_file
+print(COM_protein(in_file_path))

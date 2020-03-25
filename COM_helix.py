@@ -1,7 +1,6 @@
 from Bio.PDB import *
-from Bio.PDB import *
 import numpy as np
-
+import argparse
 
 def COM_helix(str_file):
     ATOMIC_WEIGHTS = {'H': 1.008, 'HE': 4.002602, 'LI': 6.94, 'BE': 9.012182,
@@ -28,32 +27,52 @@ def COM_helix(str_file):
                       'HS': 269, 'MT': 278, 'DS': 281, 'RG': 281, 'CN': 285, 'UUT': 286, 'FL': 289,
                       'UUP': 288, 'LV': 293, 'UUS': 294}
 
-    parser = MMCIFParser()
+    parser = PDBParser()
     structure = parser.get_structure('protein', str_file)
 
     model = structure[0]
     dssp = DSSP(model, str_file)
 
-    helix_content = []
-    helix_com = []
+    helices = []
 
     for i in range(0, len(dssp.keys())):
         if dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] != 'H':
-            border = [dssp[list(dssp.keys())[i]][0]]
+            border = [dssp.keys()[i][1][1]]
         elif dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] == 'H':
-            border.append(dssp[list(dssp.keys())[i]][0])
+            border.append(dssp.keys()[i][1][1])
         elif dssp[list(dssp.keys())[i]][2] != 'H' and dssp[list(dssp.keys())[i - 1]][2] == 'H':
-            helix_content.append(border)
+            helices.append(border)
 
-    for elem in helix_content:
-        for residue in enumerate(structure.get_residues()):
-            if (residue[0] + 1) in elem:
-                atom_struct = residue[1].get_atoms()
-                atoms = [([coord * ATOMIC_WEIGHTS[atom.get_name()[0]] for coord in list(atom.get_coord())]) for atom in
-                         atom_struct]
+    hel_COM = []
 
-                atom_struct = residue[1].get_atoms()
-                total_mass = sum([ATOMIC_WEIGHTS[atom.get_name()[0]] for atom in atom_struct])
-        helix_com.append([coord / total_mass for coord in np.sum(atoms, axis=0)])
+    for elem in helices:
+        helix_content = [list(elem)]
+        model = structure[0]
+        chain = model['A']
+        helix_mass = 0
+        weighted_coord = list()
+        helix_com = list()
 
-    return helix_com
+        for elem in helix_content:
+            for res in elem:
+                residue = chain[res]
+
+                for atom in residue.get_atoms():
+                    weight = ATOMIC_WEIGHTS[atom.get_name()[0]]
+                    helix_mass += weight
+                    weighted_coord.append([coord * weight for coord in list(atom.get_coord())])
+
+            helix_com.append([coord / helix_mass for coord in np.sum(weighted_coord, axis=0)])
+            hel_COM.append(helix_com)
+
+    return hel_COM
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-i', dest='input_file',
+                    required=True,
+                    type=str)
+args = parser.parse_args()
+
+in_file_path = args.input_file
+print(COM_helix(in_file_path))

@@ -7,7 +7,7 @@ import argparse
 def plane_angle(str_file, l1=[0, 1, 2], l2=[3, 4, 5], l3=[7, 8, 9]):
     parser = PDBParser()
     structure = parser.get_structure('protein', str_file)
-
+    
     model = structure[0]
     dssp = DSSP(model, str_file)
 
@@ -57,7 +57,27 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', dest='input_file',
                     required=True,
                     type=str)
+
+parser.add_argument('-l1', dest='fst_l',
+                    nargs='+',
+                    required=False,
+                    type=int)
+
+parser.add_argument('-l2', dest='sd_l',
+                    nargs='+',
+                    required=False,
+                    type=int)
+
+parser.add_argument('-l3', dest='td_l',
+                    nargs='+',
+                    required=False,
+                    type=int)
+
 args = parser.parse_args()
 
 in_file_path = args.input_file
-print(plane_angle(in_file_path))
+first_lay = args.fst_l
+second_lay = args.sd_l
+third_lay = args.td_l
+
+plane_angle(in_file_path, first_lay, second_lay, third_lay)

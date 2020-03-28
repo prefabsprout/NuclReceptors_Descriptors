@@ -58,4 +58,4 @@ if __name__ == '__main__':
             'clamp1_dist': [dists[1]],
             'clamp1_dist': [dists[2]]}
     my_data = pd.DataFrame(data)
-    my_data.to_csv('my_csv.csv', mode='a', header=False)
+    my_data.to_csv('COM_clamp.csv', mode='a', header=False)

@@ -1,6 +1,10 @@
 from Bio.PDB import *
 import numpy as np
 import argparse
+import os
+import argparse
+import pandas as pd
+from os import path
 
 def COM_helix(str_file):
     ATOMIC_WEIGHTS = {'H': 1.008, 'HE': 4.002602, 'LI': 6.94, 'BE': 9.012182,
@@ -67,12 +71,23 @@ def COM_helix(str_file):
 
     return hel_COM
 
-parser = argparse.ArgumentParser()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
 
-parser.add_argument('-i', dest='input_file',
-                    required=True,
-                    type=str)
-args = parser.parse_args()
+    parser.add_argument('-i', dest='input_file',
+                        required=True,
+                        type=str)
+    args = parser.parse_args()
 
-in_file_path = args.input_file
-print(COM_helix(in_file_path))
+    in_file_path = args.input_file
+
+    COM = COM_helix(in_file_path)
+    prot_name = path.basename(in_file_path)
+
+    # data = {'protein_name': [prot_name],
+    #         'COM_protein_X': [COM[0]],
+    #         'COM_protein_Y': [COM[1]],
+    #         'COM_protein_Z': [COM[2]]}
+    # my_data = pd.DataFrame(data)
+    # my_data.to_csv('COM_protein.csv', mode='a', header=False)
+

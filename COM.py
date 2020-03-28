@@ -1,6 +1,7 @@
 from Bio.PDB import *
 import numpy as np
 import os
+import argparse
 
 def COM_protein(str_file):
 
@@ -39,13 +40,13 @@ def COM_protein(str_file):
 
     return [coord / total_mass for coord in np.sum(atoms, axis=0)]
 
-
-parser = argparse.ArgumentParser()
-
-parser.add_argument('-i', dest='input_file',
-                    required=True,
-                    type=str)
-args = parser.parse_args()
-
-in_file_path = args.input_file
-print(COM_protein(in_file_path))
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument('-i', dest='input_file',
+                        required=True,
+                        type=str)
+    args = parser.parse_args()
+    
+    in_file_path = args.input_file
+    print(COM_protein(in_file_path))

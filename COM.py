@@ -2,9 +2,11 @@ from Bio.PDB import *
 import numpy as np
 import os
 import argparse
+import pandas as pd
+from os import path
+
 
 def COM_protein(str_file):
-
     ATOMIC_WEIGHTS = {'H': 1.008, 'HE': 4.002602, 'LI': 6.94, 'BE': 9.012182,
                       'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999, 'F': 18.9984032,
                       'NE': 20.1797, 'NA': 22.98976928, 'MG': 24.305, 'AL': 26.9815386,
@@ -38,15 +40,29 @@ def COM_protein(str_file):
     atom_struct = structure.get_atoms()
     total_mass = sum([ATOMIC_WEIGHTS[atom.get_name()[0]] for atom in atom_struct])
 
-    return [coord / total_mass for coord in np.sum(atoms, axis=0)]
+    COM = [coord / total_mass for coord in np.sum(atoms, axis=0)]
+    return COM
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    
+
     parser.add_argument('-i', dest='input_file',
                         required=True,
                         type=str)
     args = parser.parse_args()
-    
+
     in_file_path = args.input_file
-    print(COM_protein(in_file_path))
+
+    COM = COM_protein(in_file_path)
+    prot_name = path.basename(in_file_path)
+
+    cols = ['prot_name', 'COM_protein_X',
+            'COM_protein_Y', 'COM_protein_Z']
+
+    data = [prot_name]
+    for elem in COM:
+        data.append(elem)
+
+    df = pd.DataFrame([data], columns=cols)
+    df.to_csv('COM.csv', mode='a', header=False)

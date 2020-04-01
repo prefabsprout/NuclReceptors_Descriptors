@@ -6,6 +6,7 @@ import argparse
 import pandas as pd
 from os import path
 
+
 def COM_helix(str_file):
     ATOMIC_WEIGHTS = {'H': 1.008, 'HE': 4.002602, 'LI': 6.94, 'BE': 9.012182,
                       'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999, 'F': 18.9984032,
@@ -71,6 +72,7 @@ def COM_helix(str_file):
 
     return hel_COM
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
@@ -81,13 +83,20 @@ if __name__ == '__main__':
 
     in_file_path = args.input_file
 
-    COM = COM_helix(in_file_path)
+    COM_helix = COM_helix(in_file_path)
     prot_name = path.basename(in_file_path)
 
-    # data = {'protein_name': [prot_name],
-    #         'COM_protein_X': [COM[0]],
-    #         'COM_protein_Y': [COM[1]],
-    #         'COM_protein_Z': [COM[2]]}
-    # my_data = pd.DataFrame(data)
-    # my_data.to_csv('COM_protein.csv', mode='a', header=False)
+    cols = ['prot_name']
+    for elem in enumerate(COM_helix):
+        cols.append('Helix_num_' + str(elem[0] + 1) + '_X')
+        cols.append('Helix_num_' + str(elem[0] + 1) + '_Y')
+        cols.append('Helix_num_' + str(elem[0] + 1) + '_Z')
 
+    data = [prot_name]
+    for elem in COM_helix:
+        data.append(elem[0][0])
+        data.append(elem[0][1])
+        data.append(elem[0][2])
+
+    df = pd.DataFrame([data], columns=cols)
+    df.to_csv('COM_helix.csv', mode='a', header=False)

@@ -1,13 +1,16 @@
 from Bio.PDB import *
 from sympy import *
+from os import path
+from math import degrees
 import numpy as np
 import argparse
+import pandas as pd
 
 
-def plane_angle(str_file, l1=[0, 1, 2], l2=[3, 4, 5], l3=[7, 8, 9]):
+def plane_angle(str_file, l1, l2, l3):
     parser = PDBParser()
     structure = parser.get_structure('protein', str_file)
-    
+
     model = structure[0]
     dssp = DSSP(model, str_file)
 
@@ -22,9 +25,7 @@ def plane_angle(str_file, l1=[0, 1, 2], l2=[3, 4, 5], l3=[7, 8, 9]):
         helix_content = [list(elem)]
         model = structure[0]
         chain = model['A']
-        helix_mass = 0
         coord = list()
-        helix_com = list()
 
         for elem in helix_content:
             for res in elem:
@@ -34,50 +35,61 @@ def plane_angle(str_file, l1=[0, 1, 2], l2=[3, 4, 5], l3=[7, 8, 9]):
                 last_atoms.append(coord[-1])
 
     args = []
-    for i in range(l1[0], l1[-1]+1):
+    for i in range(l1[0], l1[-1] + 1):
         args.append(Point3D(last_atoms[i]))
     first_layer = Plane(*args)
 
     args = []
-    for i in range(l2[0], l2[-1]+1):
+    for i in range(l2[0], l2[-1] + 1):
         args.append(Point3D(last_atoms[i]))
     second_layer = Plane(*args)
 
     args = []
-    for i in range(l3[0], l3[-1]+1):
+    for i in range(l3[0], l3[-1] + 1):
         args.append(Point3D(last_atoms[i]))
     third_layer = Plane(*args)
 
-    print('Angle between 1st and 2d layer:', N(first_layer.angle_between(second_layer)))
-    print('Angle between 1st and 3d layer:', N(first_layer.angle_between(third_layer)))
-    print('Angle between 2d and 3d layer:', N(second_layer.angle_between(third_layer)))
+    return [degrees(N(first_layer.angle_between(second_layer))), degrees(N(first_layer.angle_between(third_layer))),
+            degrees(second_layer.angle_between(third_layer))]
 
-parser = argparse.ArgumentParser()
 
-parser.add_argument('-i', dest='input_file',
-                    required=True,
-                    type=str)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
 
-parser.add_argument('-l1', dest='fst_l',
-                    nargs='+',
-                    required=False,
-                    type=int)
+    parser.add_argument('-i', dest='input_file',
+                        required=True,
+                        type=str)
 
-parser.add_argument('-l2', dest='sd_l',
-                    nargs='+',
-                    required=False,
-                    type=int)
+    parser.add_argument('-l1', dest='fst_l',
+                        nargs='+',
+                        required=True,
+                        type=int)
 
-parser.add_argument('-l3', dest='td_l',
-                    nargs='+',
-                    required=False,
-                    type=int)
+    parser.add_argument('-l2', dest='sd_l',
+                        nargs='+',
+                        required=True,
+                        type=int)
 
-args = parser.parse_args()
+    parser.add_argument('-l3', dest='td_l',
+                        nargs='+',
+                        required=True,
+                        type=int)
 
-in_file_path = args.input_file
-first_lay = args.fst_l
-second_lay = args.sd_l
-third_lay = args.td_l
+    args = parser.parse_args()
 
-plane_angle(in_file_path, first_lay, second_lay, third_lay)
+    in_file_path = args.input_file
+    first_lay = args.fst_l
+    second_lay = args.sd_l
+    third_lay = args.td_l
+
+    plane_angle = plane_angle(in_file_path, first_lay, second_lay, third_lay)
+    cols = ['prot_name', 'angle_between_first_second',
+            'angle_between_first_third', 'angle_between_second_third']
+
+    prot_name = path.basename(in_file_path)
+    data = [prot_name]
+    for elem in plane_angle:
+        data.append(elem)
+
+    df = pd.DataFrame([data], columns=cols)
+    df.to_csv('planes_angles.csv', mode='a', header=False)

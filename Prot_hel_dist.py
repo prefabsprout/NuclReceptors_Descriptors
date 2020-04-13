@@ -7,9 +7,9 @@ import argparse
 import pandas as pd
 
 
-def prot_hel_dist(str_file):
-    hel_COMs = COM_helix(str_file)
-    prot_COM = COM_protein(str_file)
+def prot_hel_dist(pdb_file):
+    hel_COMs = COM_helix(pdb_file)
+    prot_COM = COM_protein(pdb_file)
     prot_hel_dists = []
     for i in range(0, len(hel_COMs)):
         vect = np.array(hel_COMs[i]) - np.array(prot_COM)

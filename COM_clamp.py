@@ -6,15 +6,15 @@ import pandas as pd
 import argparse
 
 
-def COM_clamp(str_file, ch_clamps):
+def COM_clamp(pdb_file, ch_clamps):
     parser = PDBParser()
-    structure = parser.get_structure('protein', str_file)
+    structure = parser.get_structure('protein', pdb_file)
 
     model = structure[0]
     chain = model['A']
 
     atom_coord = []
-    com = np.array(COM_protein(str_file))
+    com = np.array(COM_protein(pdb_file))
 
     for res in chain:
         if res.id[1] == ch_clamps[0] or res.id[1] == ch_clamps[1] or res.id[1] == ch_clamps[2]:

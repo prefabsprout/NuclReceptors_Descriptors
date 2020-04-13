@@ -6,7 +6,7 @@ import pandas as pd
 from os import path
 
 
-def COM_protein(str_file):
+def COM_protein(pdb_file):
     ATOMIC_WEIGHTS = {'H': 1.008, 'HE': 4.002602, 'LI': 6.94, 'BE': 9.012182,
                       'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999, 'F': 18.9984032,
                       'NE': 20.1797, 'NA': 22.98976928, 'MG': 24.305, 'AL': 26.9815386,
@@ -32,7 +32,7 @@ def COM_protein(str_file):
                       'UUP': 288, 'LV': 293, 'UUS': 294}
 
     parser = PDBParser()
-    structure = parser.get_structure('protein', str_file)
+    structure = parser.get_structure('protein', pdb_file)
     atom_struct = structure.get_atoms()
 
     atoms = [([coord * ATOMIC_WEIGHTS[atom.get_name()[0]] for coord in list(atom.get_coord())]) for atom in atom_struct]

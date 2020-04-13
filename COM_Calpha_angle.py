@@ -6,13 +6,13 @@ import numpy as np
 import pandas as pd
 import argparse
 
-def COM_Calpha_angle(str_file):
-    protCOM = COM_protein(str_file)
+def COM_Calpha_angle(pdb_file):
+    protCOM = COM_protein(pdb_file)
     parser = PDBParser()
-    structure = parser.get_structure('protein', str_file)
+    structure = parser.get_structure('protein', pdb_file)
 
     model = structure[0]
-    dssp = DSSP(model, str_file)
+    dssp = DSSP(model, pdb_file)
 
     helix_content = []
 

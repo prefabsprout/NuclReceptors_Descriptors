@@ -7,7 +7,7 @@ import pandas as pd
 from os import path
 
 
-def COM_helix(str_file):
+def COM_helix(pdb_file):
     ATOMIC_WEIGHTS = {'H': 1.008, 'HE': 4.002602, 'LI': 6.94, 'BE': 9.012182,
                       'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999, 'F': 18.9984032,
                       'NE': 20.1797, 'NA': 22.98976928, 'MG': 24.305, 'AL': 26.9815386,
@@ -33,10 +33,10 @@ def COM_helix(str_file):
                       'UUP': 288, 'LV': 293, 'UUS': 294}
 
     parser = PDBParser()
-    structure = parser.get_structure('protein', str_file)
+    structure = parser.get_structure('protein', pdb_file)
 
     model = structure[0]
-    dssp = DSSP(model, str_file)
+    dssp = DSSP(model, pdb_file)
 
     helices = []
 

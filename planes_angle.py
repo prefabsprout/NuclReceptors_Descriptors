@@ -8,8 +8,8 @@ import argparse
 import pandas as pd
 
 
-def plane_angle(str_file, l1, l2, l3):
-    com_hels = COM_helix(str_file)
+def plane_angle(pdb_file, l1, l2, l3):
+    com_hels = COM_helix(pdb_file)
 
     args = []
     for i in range(l1[0], l1[-1] + 1):

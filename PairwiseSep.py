@@ -7,8 +7,8 @@ import argparse
 import pandas as pd
 
 
-def PairwiseSep(str_file):
-    hel_COMs = list(chain(*COM_helix(str_file)))
+def PairwiseSep(pdb_file):
+    hel_COMs = list(chain(*COM_helix(pdb_file)))
     pairwise_seps = []
     for j in range(0, len(hel_COMs)-1):
         result = []

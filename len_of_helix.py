@@ -3,13 +3,13 @@ from Bio.PDB import *
 
 def len_of_hel(pdb_file, dssp_file):
 
-    with open('1db1.dssp') as dssp_file:
+    with open(dssp_file) as dssp_file:
         dssp_lines = [line.rstrip().split() for line in dssp_file]
 
     p = PDBParser()
-    structure = p.get_structure('1db1', '1db1.pdb')
+    structure = p.get_structure('protein', pdb_file)
     model = structure[0]
-    dssp = DSSP(model, '1db1.pdb')
+    dssp = DSSP(model, pdb_file)
 
     # рассчитываем границы спиралей по  dssp
     helix_borders = []

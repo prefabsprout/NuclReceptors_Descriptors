@@ -21,5 +21,21 @@ def PairwiseSep(pdb_file):
 
 if __name__ == '__main__':
     dir = '/home/stephen/Desktop/PDB'  # Enter your PDB directory
+
+    cols = ['prot_name']
+    for i in range(0, 11):
+        for j in range(i+1, 12):
+            cols.append('Pairwise_sep_between_hel_' + str(i + 1) + '_and_hel_' + str(j+1))
+    print(cols)
+
+    df = pd.DataFrame(columns=cols)
+
     for filename in os.listdir(dir):
-        print(PairwiseSep(os.path.join(dir, filename)))
+        pairseps = PairwiseSep(os.path.join(dir, filename))
+
+        data = [filename]
+        for elem in pairseps:
+            for dist in elem:
+                data.append(dist)
+
+        df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)

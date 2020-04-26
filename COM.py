@@ -45,24 +45,17 @@ def COM_protein(pdb_file):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    dir = '/home/stephen/Desktop/PDB'  # Enter your PDB directory
 
-    parser.add_argument('-i', dest='input_file',
-                        required=True,
-                        type=str)
-    args = parser.parse_args()
+    cols = ['prot_name', 'COM_x', 'COM_y', 'COM_z']
+    df = pd.DataFrame(columns=cols)
 
-    in_file_path = args.input_file
+    for filename in os.listdir(dir):
+        COM_prot = COM_protein(os.path.join(dir, filename))
 
-    COM = COM_protein(in_file_path)
-    prot_name = path.basename(in_file_path)
+        data = [filename]
+        for coord in COM_prot:
+            data.append(coord)
 
-    cols = ['prot_name', 'COM_protein_X',
-            'COM_protein_Y', 'COM_protein_Z']
-
-    data = [prot_name]
-    for elem in COM:
-        data.append(elem)
-
-    df = pd.DataFrame([data], columns=cols)
-    df.to_csv('COM.csv', mode='a', header=False)
+        df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)
+        print(df)

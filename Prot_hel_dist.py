@@ -19,6 +19,18 @@ def prot_hel_dist(pdb_file):
 
 if __name__ == '__main__':
     dir = '/home/stephen/Desktop/PDB'  # Enter your PDB directory
+
+    cols = ['prot_name']
+    for elem in range(0, 12):
+        cols.append('Helix_num_' + str(elem + 1))
+    df = pd.DataFrame(columns=cols)
+
     for filename in os.listdir(dir):
         prothel = prot_hel_dist(os.path.join(dir, filename))
-        prot_name = filename
+
+        data = [filename]
+        for elem in prothel:
+            data.append(elem)
+
+        df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)
+    print(df)

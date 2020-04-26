@@ -1,6 +1,6 @@
 from Bio.PDB import *
 from COM import COM_protein
-from os import path
+import os
 import numpy as np
 import pandas as pd
 import argparse
@@ -29,38 +29,19 @@ def COM_clamp(pdb_file, ch_clamps):
 
     return ch_clamp_dist
 
-print(COM_clamp('/home/stephen/Desktop/PDB/1db1.pdb', [256,257,258]))
 
-#
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser()
-#
-#     parser.add_argument('-i', dest='input_file',
-#                         required=True,
-#                         type=str)
-#
-#     parser.add_argument('--chargeclamps', dest='chcl',
-#                         nargs='+',
-#                         required=False,
-#                         type=int)
-#
-#     args = parser.parse_args()
-#
-#     in_file_path = args.input_file
-#     ch_clamps = args.chcl
-#
-#     dists = COM_clamp(in_file_path, ch_clamps)
-#     prot_name = path.basename(in_file_path)
-#
-#     cols = ['prot_name']
-#     for elem in enumerate(dists):
-#         cols.append('Helix_num_' + str(elem[0] + 1) + '_COM_clamp')
-#
-#     data = [prot_name, ch_clamps[1], ch_clamps[2], ch_clamps[3]]
-#     for elem in dists:
-#         data.append(elem[0])
-#         data.append(elem[1])
-#         data.append(elem[2])
-#
-#     df = pd.DataFrame([data], columns=cols)
-#     df.to_csv('COM_clamp.csv', mode='a', header=False)
+if __name__ == '__main__':
+    dir = '/home/stephen/Desktop/PDB'  # Enter your PDB directory
+
+    cols = ['prot_name', 'dist_between_COM_clamp_1', 'dist_between_COM_clamp_2', 'dist_between_COM_clamp_3']
+    df = pd.DataFrame(columns=cols)
+
+    for filename in os.listdir(dir):
+        clamps = COM_clamp(os.path.join(dir, filename), [256,257,258])
+
+        data = [filename]
+        for dist in clamps:
+            data.append(dist)
+
+        df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)
+        print(df)

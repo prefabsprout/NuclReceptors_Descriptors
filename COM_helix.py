@@ -74,29 +74,22 @@ def COM_helix(pdb_file):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-i', dest='input_file',
-                        required=True,
-                        type=str)
-    args = parser.parse_args()
-
-    in_file_path = args.input_file
-
-    COM_helix = COM_helix(in_file_path)
-    prot_name = path.basename(in_file_path)
+    dir = '/home/stephen/Desktop/PDB'  # Enter your PDB directory
 
     cols = ['prot_name']
-    for elem in enumerate(COM_helix):
-        cols.append('Helix_num_' + str(elem[0] + 1) + '_X')
-        cols.append('Helix_num_' + str(elem[0] + 1) + '_Y')
-        cols.append('Helix_num_' + str(elem[0] + 1) + '_Z')
+    for elem in range(0, 12):
+        cols.append('Helix_x_num_' + str(elem + 1))
+        cols.append('Helix_y_num_' + str(elem + 1))
+        cols.append('Helix_z_num_' + str(elem + 1))
+    df = pd.DataFrame(columns=cols)
 
-    data = [prot_name]
-    for elem in COM_helix:
-        data.append(elem[0][0])
-        data.append(elem[0][1])
-        data.append(elem[0][2])
+    for filename in os.listdir(dir):
+        COM_hel = COM_helix(os.path.join(dir, filename))
 
-    df = pd.DataFrame([data], columns=cols)
-    df.to_csv('COM_helix.csv', mode='a', header=False)
+        data = [filename]
+        for hel in COM_hel:
+            for coord in hel[0]:
+                data.append(coord)
+
+        df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)
+        print(df)

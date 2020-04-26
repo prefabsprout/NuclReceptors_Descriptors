@@ -1,7 +1,7 @@
 from Bio.PDB import *
 from COM import COM_protein
 from math import degrees
-from os import path
+import os
 import numpy as np
 import pandas as pd
 import argparse
@@ -51,25 +51,18 @@ def COM_Calpha_angle(pdb_file):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-i', dest='input_file',
-                        required=True,
-                        type=str)
-    args = parser.parse_args()
-
-    in_file_path = args.input_file
-
-    COM_Сalpha = COM_Calpha_angle(in_file_path)
-    prot_name = path.basename(in_file_path)
+    dir = '/home/stephen/Desktop/PDB'  # Enter your PDB directory
 
     cols = ['prot_name']
-    for elem in enumerate(COM_Сalpha):
-        cols.append('Helix_num_' + str(elem[0] + 1) + '_COM_Calpha_angle')
+    for elem in range(0, 12):
+        cols.append('Angle_between_COM_and_Calpha_of_hel_' + str(elem + 1))
+    df = pd.DataFrame(columns=cols)
 
-    data = [prot_name]
-    for elem in COM_Сalpha:
-        data.append(elem)
+    for filename in os.listdir(dir):
+        alpha_angle = COM_Calpha_angle(os.path.join(dir, filename))
 
-    df = pd.DataFrame([data], columns=cols)
-    df.to_csv('COM_Calpha_angle.csv', mode='a', header=False)
+        data = [filename]
+        for elem in alpha_angle:
+            data.append(elem)
+
+        df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)

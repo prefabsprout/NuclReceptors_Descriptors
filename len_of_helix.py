@@ -1,10 +1,8 @@
 from Bio.PDB import *
+import pandas as pd
 
 
-def len_of_hel(pdb_file, dssp_file):
-
-    with open(dssp_file) as dssp_file:
-        dssp_lines = [line.rstrip().split() for line in dssp_file]
+def cos_hel(pdb_file):
 
     p = PDBParser()
     structure = p.get_structure('protein', pdb_file)
@@ -16,25 +14,25 @@ def len_of_hel(pdb_file, dssp_file):
 
     for i in range(0, len(dssp.keys())):
         if dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] != 'H':
-            border = [dssp[list(dssp.keys())[i]][0]]
+            border = [dssp.keys()[i][1][1]]
         elif dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i + 1]][2] != 'H':
-            border.append(dssp[list(dssp.keys())[i]][0])
+            border.append(dssp.keys()[i][1][1])
             helix_borders.append(border)
 
-    # для каждой границы спирали ставим в соответствие три координаты СА
-    res = dict()
+    # для каждой граничной точки экстрагируем вектор координат
+    helices = {}
+    for i in range(0, len(helix_borders)):
+        helices[i] = [structure[0]['A'][res]['CA'].get_vector() for res in [helix_borders[i]][0]]
 
-    for i in range(len(helix_borders)):
-        res[i] = [dssp_lines[helix_borders[i][0]+27][-3], dssp_lines[helix_borders[i][0]+27][-2], dssp_lines[helix_borders[i][0]+27][-1]], [dssp_lines[helix_borders[i][1]+27][-3], dssp_lines[helix_borders[i][1]+27][-2], dssp_lines[helix_borders[i][1]+27][-1]]
+    for elem in helices:
+        helices[elem] = (helices[elem][1]-helices[elem][0])
 
-    # расчитываем длину получившегося отрезка по формуле ((x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2)^0.5
-    coord = dict()
     lens_of_helices = dict()
 
-    for key, value in res.items():
-        coord[key] = [(float(value[1][0]) - float(value[0][0]))**2]
-        coord[key].append((float(value[1][1]) - float(value[0][1]))**2)
-        coord[key].append((float(value[1][2]) - float(value[0][2]))**2)
-        lens_of_helices[key] = (coord[key][0] + coord[key][1] + coord[key][2]) ** 0.5
-    
-    return lens_of_helices
+    # расчитываем длину получившегося отрезка по формуле ((x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2)^0.5
+    for el in helices:
+        lens_of_helices[el] = (helices[el][0]**2 + helices[el][1]**2 + helices[el][2]**2) ** 0.5
+
+    lens_hel = pd.Series(lens_of_helices).to_csv(pdb_file+'.csv')
+
+    return lens_hel 

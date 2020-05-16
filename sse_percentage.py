@@ -25,5 +25,5 @@ def sseCalc(pdb_file):
            'Bend': sses.count('S') / resamount * 100,
            'Other': (resamount - len(sses)) / resamount * 100}
 
-    sse_percent = pd.Series(sse).to_csv(pdb_file+'.csv')
+    sse_percent = pd.Series(sse).to_csv('sse_'+pdb_file+'.csv')
     return sse_percent

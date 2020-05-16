@@ -31,5 +31,5 @@ def cos_hel(pdb_file):
                                 (((helices[el][0]**2+helices[el][1]**2+helices[el][2]**2)**0.5) *
                                 ((helices[an_el][0]**2+helices[an_el][1]**2+helices[an_el][2]**2)**0.5))
                                 for an_el in helices]
-    data = pd.DataFrame(cos_between_hel).to_csv(pdb_file+'.csv')
+    data = pd.DataFrame(cos_between_hel).to_csv('cos_'+pdb_file+'.csv')
     return data

@@ -33,6 +33,6 @@ def len_of_hel(pdb_file):
     for el in helices:
         lens_of_helices[el] = (helices[el][0]**2 + helices[el][1]**2 + helices[el][2]**2) ** 0.5
 
-    lens_hel = pd.Series(lens_of_helices).to_csv(pdb_file+'.csv')
+    lens_hel = pd.Series(lens_of_helices).to_csv('cos_'+pdb_file+'.csv')
 
     return lens_hel 

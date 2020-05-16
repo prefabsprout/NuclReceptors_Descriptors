@@ -2,7 +2,7 @@ from Bio.PDB import *
 import pandas as pd
 
 
-def cos_hel(pdb_file):
+def len_of_hel(pdb_file):
 
     p = PDBParser()
     structure = p.get_structure('protein', pdb_file)

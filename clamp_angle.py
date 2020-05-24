@@ -2,7 +2,7 @@ from Bio.PDB import *
 from math import degrees
 import pandas as pd
 
-def ch_clamp_dist(pdb_file, charge_clamps):
+def ch_clamp_angles(pdb_file, charge_clamps):
 
     p = PDBParser()
     structure = p.get_structure('protein', pdb_file)

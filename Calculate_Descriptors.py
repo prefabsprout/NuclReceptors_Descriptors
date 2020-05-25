@@ -53,13 +53,14 @@ def COM_Calpha_angle(pdb_file):
     dssp = DSSP(model, pdb_file)
 
     helix_content = []
-
+    helices = []
     for i in range(0, len(dssp.keys())):
-        if dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] != 'H':
-            border = [dssp.keys()[i][1][1]]
-        elif dssp[list(dssp.keys())[i]][2] != 'H' and dssp[list(dssp.keys())[i - 1]][2] == 'H':
-            border.append(dssp.keys()[i - 1][1][1])
-            helix_content.append(border)
+        if dssp.keys()[i][0] == 'A':
+            if dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] != 'H':
+                border = [dssp.keys()[i][1][1]]
+            elif dssp[list(dssp.keys())[i]][2] != 'H' and dssp[list(dssp.keys())[i - 1]][2] == 'H':
+                border.append(dssp.keys()[i - 1][1][1])
+                helix_content.append(border)
     CA_coords = []
 
     for elem in helix_content:
@@ -89,27 +90,30 @@ def COM_Calpha_angle(pdb_file):
 
 
 def COM_clamp(pdb_file, ch_clamps):
-    parser = PDBParser()
-    structure = parser.get_structure('protein', pdb_file)
+    try:
+        parser = PDBParser()
+        structure = parser.get_structure('protein', pdb_file)
 
-    model = structure[0]
-    chain = model['A']
+        model = structure[0]
+        chain = model['A']
 
-    atom_coord = []
-    com = np.array(COM_protein(pdb_file))
+        atom_coord = []
+        com = np.array(COM_protein(pdb_file))
 
-    for res in chain:
-        if res.id[1] == ch_clamps[0] or res.id[1] == ch_clamps[1] or res.id[1] == ch_clamps[2]:
-            for atom in res:
-                if atom.get_name() == 'CA':
-                    atom_coord.append(atom.get_coord())
+        for res in chain:
+            if res.id[1] == ch_clamps[0] or res.id[1] == ch_clamps[1] or res.id[1] == ch_clamps[2]:
+                for atom in res:
+                    if atom.get_name() == 'CA':
+                        atom_coord.append(atom.get_coord())
 
-    ch_clamp_dist = []
-    for elem in atom_coord:
-        vect = np.array(elem) - np.array(com)
-        ch_clamp_dist.append(np.sqrt(np.sum(vect ** 2)))
+        ch_clamp_dist = []
+        for elem in atom_coord:
+            vect = np.array(elem) - np.array(com)
+            ch_clamp_dist.append(np.sqrt(np.sum(vect ** 2)))
 
-    return ch_clamp_dist
+        return ch_clamp_dist
+    except:
+        KeyError
 
 
 def COM_helix(pdb_file):
@@ -146,13 +150,13 @@ def COM_helix(pdb_file):
     helices = []
 
     for i in range(0, len(dssp.keys())):
-        if dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] != 'H':
-            border = [dssp.keys()[i][1][1]]
-        elif dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] == 'H':
-            border.append(dssp.keys()[i][1][1])
-        elif dssp[list(dssp.keys())[i]][2] != 'H' and dssp[list(dssp.keys())[i - 1]][2] == 'H':
-            helices.append(border)
-
+        if dssp.keys()[i][0] == 'A':
+            if dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] != 'H':
+                border = [dssp.keys()[i][1][1]]
+            elif dssp[list(dssp.keys())[i]][2] == 'H' and dssp[list(dssp.keys())[i - 1]][2] == 'H':
+                border.append(dssp.keys()[i][1][1])
+            elif dssp[list(dssp.keys())[i]][2] != 'H' and dssp[list(dssp.keys())[i - 1]][2] == 'H':
+                helices.append(border)
     hel_COM = []
 
     for elem in helices:
@@ -201,46 +205,119 @@ def prot_hel_dist(pdb_file):
 
 
 if __name__ == '__main__':
-    dir = '/home/stepan/Desktop/pdb'  # Enter your PDB directory
+    def calc_all(directory, db_output, clamp_resid, species, prep):
+        dir = directory # Enter your PDB directory
 
-    cols = ['prot_name', 'COM_x', 'COM_y', 'COM_z']
-    for elem in range(0, 12):
-        cols.append('Angle_between_COM_and_Calpha_of_hel_' + str(elem + 1))
-    cols = ['prot_name', 'dist_between_COM_clamp_1', 'dist_between_COM_clamp_2', 'dist_between_COM_clamp_3']
-    for elem in range(0, 12):
-        cols.append('Helix_x_num_' + str(elem + 1))
-        cols.append('Helix_y_num_' + str(elem + 1))
-        cols.append('Helix_z_num_' + str(elem + 1))
-    for i in range(0, 11):
-        for j in range(i + 1, 12):
-            cols.append('Pairwise_sep_between_hel_' + str(i + 1) + '_and_hel_' + str(j + 1))
-    for elem in range(0, 12):
-        cols.append('Helix_num_' + str(elem + 1))
-    df = pd.DataFrame(columns=cols)
+        cols = ['prot_name', 'species_name', "preparation"]
 
-    for filename in os.listdir(dir):
-        data = [filename]
+        com_cols = ['prot_name','COM_x', 'COM_y', 'COM_z']
 
-        COM_prot = COM_protein(os.path.join(dir, filename))
-        for coord in COM_prot:
-            data.append(coord)
+        angle_cols = ['prot_name']
+        for elem in range(0, 12):
+            angle_cols.append('Angle_between_COM_and_Calpha_of_hel_' + str(elem + 1))
 
-        alpha_angle = COM_Calpha_angle(os.path.join(dir, filename))
-        for elem in alpha_angle:
-            data.append(elem)
+        comclampdist_cols = ['prot_name','dist_between_COM_clamp_1', 'dist_between_COM_clamp_2', 'dist_between_COM_clamp_3']
 
-        clamps = COM_clamp(os.path.join(dir, filename), [256, 257, 258])
-        for dist in clamps:
-            data.append(dist)
+        comhel_cols = ['prot_name']
+        for elem in range(0, 12):
+            comhel_cols.append('COM_helix_x_num_' + str(elem + 1))
+            comhel_cols.append('COM_helix_y_num_' + str(elem + 1))
+            comhel_cols.append('COM_helix_z_num_' + str(elem + 1))
 
-        pairseps = PairwiseSep(os.path.join(dir, filename))
-        for elem in pairseps:
-            for dist in elem:
-                data.append(dist)
+        pairwise_cols = ['prot_name']
+        for i in range(0, 11):
+            for j in range(i + 1, 12):
+                pairwise_cols.append('Pairwise_sep_between_hel_' + str(i + 1) + '_and_hel_' + str(j + 1))
 
-        prothel = prot_hel_dist(os.path.join(dir, filename))
-        for elem in prothel:
-            data.append(elem)
+        protheldist_cols = ['prot_name']
+        for elem in range(0, 12):
+            protheldist_cols.append('Prot_Helix_' + str(elem + 1) + '_distance')
 
-        df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)
-    df.to_csv("calc_results.csv")
+        df = pd.DataFrame(columns=cols)
+        df_clamps = pd.DataFrame(columns=comclampdist_cols)
+        df_com = pd.DataFrame(columns=com_cols)
+        df_alphaangle = pd.DataFrame(columns=angle_cols)
+        df_comhels = pd.DataFrame(columns=comhel_cols)
+        df_pairseps = pd.DataFrame(columns=pairwise_cols)
+        df_prothel = pd.DataFrame(columns=protheldist_cols)
+
+        for filename in os.listdir(dir):
+            data = [filename, species, prep]
+            df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)
+
+            try:
+                COM_prot = COM_protein(os.path.join(dir, filename))
+            except:
+                KeyError
+            data_com = [filename]
+            for coord in COM_prot:
+                data_com.append(coord)
+            df_com = df_com.append(pd.Series(data_com, index=com_cols[0:len(data_com)]), ignore_index=True)
+
+            try:
+                alpha_angle = COM_Calpha_angle(os.path.join(dir, filename))
+            except:
+                KeyError
+            data_alphaagnle = [filename]
+            for elem in alpha_angle:
+                data_alphaagnle.append(elem)
+            df_alphaangle = df_alphaangle.append(pd.Series(data_alphaagnle, index=angle_cols[0:len(data_alphaagnle)]), ignore_index=True)
+
+            try:
+                clamps = COM_clamp(os.path.join(dir, filename), clamp_resid)
+            except:
+                KeyError
+            data_clamps = [filename]
+            if clamps is not None:
+                for dist in clamps:
+                    data_clamps.append(dist)
+            df_clamps = df_clamps.append(pd.Series(data_clamps, index=comclampdist_cols[0:len(data_clamps)]), ignore_index=True)
+
+            try:
+                com_hels = COM_helix(os.path.join(dir, filename))
+            except:
+                KeyError
+            data_comhels = [filename]
+            for elem in com_hels:
+                for coord in elem[0]:
+                    data_comhels.append(coord)
+            df_comhels = df_comhels.append(pd.Series(data_comhels, index=comhel_cols[0:len(data_comhels)]), ignore_index=True)
+
+            try:
+                pairseps = PairwiseSep(os.path.join(dir, filename))
+            except:
+                KeyError
+            data_pairseps = [filename]
+            for elem in pairseps:
+                for dist in elem:
+                    data_pairseps.append(dist)
+            df_pairseps = df_pairseps.append(pd.Series(data_pairseps, index=pairwise_cols[0:len(data_pairseps)]), ignore_index=True)
+
+            try:
+                prothel = prot_hel_dist(os.path.join(dir, filename))
+            except:
+                KeyError
+            data_prothel = [filename]
+            for elem in prothel:
+                data_prothel.append(elem)
+            df_prothel = df_prothel.append(pd.Series(data_prothel, index=protheldist_cols[0:len(data_prothel)]), ignore_index=True)
+
+            df_concat = df.merge(df_prothel, on='prot_name').merge(df_pairseps,on='prot_name')\
+                .merge(df_comhels,on='prot_name').merge(df_clamps,on='prot_name')\
+                .merge(df_alphaangle,on='prot_name').merge(df_com,on='prot_name')
+        df_concat.to_csv(db_output)
+
+
+    calc_all("/home/stepan/Git_Repo/VDR_PDB/Danio rerio", "calc_results_danio.csv", [274, 292, 446],
+             "zebrafish",0)
+    calc_all("/home/stepan/Git_Repo/VDR_PDB/Homo sapiens", "calc_results_homosap.csv", [246, 264, 420],
+             "human",0)
+    calc_all("/home/stepan/Git_Repo/VDR_PDB/Rattus norvegicus", "calc_results_rattus.csv", [242, 260, 416],
+             "rat",0)
+
+    calc_all("/home/stepan/Git_Repo/VDR_PDB_prep/Danio rerio", "calc_results_danio_prep.csv",[274, 292, 446],
+             "zebrafish",1)
+    calc_all("/home/stepan/Git_Repo/VDR_PDB_prep/Homo sapiens", "calc_results_homosap_prep.csv",[246, 264, 420],
+             "human",1)
+    calc_all("/home/stepan/Git_Repo/VDR_PDB_prep/Rattus norvegicus", "calc_results_rattus_prep.csv",[242, 260, 416],
+             "rat",1)

@@ -243,15 +243,6 @@ if __name__ == '__main__':
         df_len = pd.DataFrame(columns=cols_len)
         df_cos = pd.DataFrame(columns=cols_cos)
 
-        # try:
-        #     COM_prot = COM_protein(os.path.join(dir, filename))
-        # except:
-        #     KeyError
-        # data_com = [filename]
-        # for coord in COM_prot:
-        #     data_com.append(coord)
-        # df_com = df_com.append(pd.Series(data_com, index=com_cols[0:len(data_com)]), ignore_index=True)
-
         for filename in os.listdir(dir):
             data = [filename, species, prep]
             df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)

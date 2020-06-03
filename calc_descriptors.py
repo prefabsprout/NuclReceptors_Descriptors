@@ -149,8 +149,11 @@ def ch_clamp_angles(pdb_file, charge_clamps):
 
 if __name__ == '__main__':
     def calc_all(directory, db_output, clamp_resid, species, prep):
+        """Calculation of all previous descriptors for all structures from directory"""
+        
         dir = directory  # Enter your PDB directory
-
+        
+        # creating columns' names for final dataframe
         cols = ['prot_name', 'species_name', "preparation"]
 
         cols_sse = ['prot_name', 'Helix', 'Beta bridge', 'Strand', 'Helix-3', 'Helix-5', 'Turn', 'Bend', 'Other']
@@ -168,14 +171,16 @@ if __name__ == '__main__':
         for elem in range(1,3):
             for el in range(elem+1, 4):
                 cols_cl_angle.append(f'clamp_angle_{elem}-{el}')
-
+        
+        # creating dataframes for results of descriptors' calculation 
         df = pd.DataFrame(columns=cols)
         df_cl_dist = pd.DataFrame(columns=cols_cl_dist)
         df_cl_angles = pd.DataFrame(columns=cols_cl_angle)
         df_sse = pd.DataFrame(columns=cols_sse)
         df_len = pd.DataFrame(columns=cols_len)
         df_cos = pd.DataFrame(columns=cols_cos)
-
+        
+        # calculation of descriptors for every file in directory and merging them in one dataframe
         for filename in os.listdir(dir):
             data = [filename, species, prep]
             df = df.append(pd.Series(data, index=cols[0:len(data)]), ignore_index=True)
@@ -245,7 +250,7 @@ if __name__ == '__main__':
 
         df_concat.to_csv(db_output)
 
-
+    # call of function calc_all() for given directories
     calc_all("/home/masha/Descriptors/VDR_PDB/Danio rerio", "calc_results_danio.csv", [274, 292, 446],
              "zebrafish", 0)
     calc_all("/home/masha/Descriptors/VDR_PDB/Homo sapiens", "calc_results_homosap.csv", [246, 264, 420],

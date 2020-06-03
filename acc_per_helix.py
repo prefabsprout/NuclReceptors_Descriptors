@@ -2,6 +2,7 @@ from Bio.PDB import *
 
 
 def acc_per_hel(pdb_file):
+    """Calculating of solvent-accessibility area per helix, Å2"""
     res_max_acc = {
         "A": 106.0,
         "R": 248.0,
@@ -24,12 +25,14 @@ def acc_per_hel(pdb_file):
         "Y": 222.0,
         "V": 142.0,
     }
-
+    
+    # geting the pdb- and dssp structures from pdb-file
     p = PDBParser()
     structure = p.get_structure('protein', pdb_file)
     model = structure[0]
     dssp = DSSP(model, pdb_file)
-
+    
+    # extracting borders of helices from dssp
     helix_borders = []
 
     for i in range(0, len(dssp.keys())):
@@ -44,7 +47,8 @@ def acc_per_hel(pdb_file):
 
     for i in range(len(helix_borders)):
         helices[i] = {el : dssp[list(dssp.keys())[el-1]][3] * res_max_acc[dssp[list(dssp.keys())[el-1]][1]] for el in range(helix_borders[i][0], helix_borders[i][1]+1)}
-
+    
+    # calculation of solvent accessibility per helix according to data from dssp-file
     for key in helices.keys():
         for res in helices[key].keys():
             if key in acc:
@@ -55,4 +59,5 @@ def acc_per_hel(pdb_file):
     for key, acc_sum in acc.items():
         acc[key] = acc_sum/(len(helices[key]))
     
+    # return dict with accessibility for every alpha-helix in structure
     return acc

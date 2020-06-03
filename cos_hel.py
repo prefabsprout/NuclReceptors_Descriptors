@@ -3,12 +3,15 @@ import pandas as pd
 
 
 def cos_hel(pdb_file):
-
+    """Calculation of cos between all helices in structure"""
+    
+    # getting structure from pdb-file
     p = PDBParser()
     structure = p.get_structure('protein', pdb_file)
     model = structure[0]
     dssp = DSSP(model, pdb_file)
-
+    
+    # extracting borders of helices from dssp and vectors for them
     helix_borders = []
 
     for i in range(0, len(dssp.keys())):
@@ -21,10 +24,12 @@ def cos_hel(pdb_file):
     helices = dict()
     for i in range(0, len(helix_borders)):
         helices[i] = [structure[0]['A'][res]['CA'].get_vector() for res in [helix_borders[i]][0]]
-
+    
+    # making vectors for helices
     for elem in helices:
         helices[elem] = helices[elem][0]-helices[elem][1]
-
+    
+    # calculation cos for every pair of helices in structure
     cos_between_hel = dict()
     for el in helices:
         cos_between_hel[el] = [(helices[el]*helices[an_el]) / \

@@ -1,0 +1,87 @@
+---
+title: "Nucl_Data analysis"
+output: html_document
+---
+
+```{r,include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+```
+
+```{r}
+multMerge = function(mypath){
+  filenames = list.files(path = mypath, full.names = TRUE)
+  datalist = lapply(filenames, 
+                    function(x){read.csv(file = x,
+                                         header = TRUE,
+                                         stringsAsFactors = FALSE)})
+  Reduce(function(x,y) {merge(x, y, all = TRUE)}, datalist)
+}
+
+nucldata <- multMerge('data')
+
+nucldata_cleaned_full <- nucldata[, which(colMeans(!is.na(nucldata)) > 0.90)]
+
+write.csv(nucldata_cleaned_full,'nucldata_cleaned_full.csv',row.names = F)
+```
+
+Let see on our data on boxplots:
+
+```{r, warning=FALSE}
+qplot(as.factor(species_name), Angle_between_COM_and_Calpha_of_hel_7, data = nucldata_cleaned_full, 
+      geom=c("boxplot"), fill=as.factor(preparation), xlab='Prepared', ylab='Angle between COM and Calpha of helix 7') + 
+  labs(fill = "Is it prepared")
+```
+
+
+
+Because our data is not so clean and definitely not-parametric, let use non parametric tests to find difference. Wilcox test with Bonferroni adjust to check differences in data before and after preparation:
+```{r}
+res_prep <- nucldata_cleaned_full[,-c(1,2,3,4)] %>% 
+  select_if(is.numeric) %>%
+  map_df(~ broom::tidy(wilcox.test(. ~nucldata_cleaned_full$preparation)), .id = 'var')
+res_prep$p.value = p.adjust(res_prep$p.value, method = 'bonferroni')
+```
+
+And Kruskal test with Bonferroni adjust to check differences between species, because our data have more than two gradations of factor:
+```{r}
+res_spec <- nucldata_cleaned_full[,-c(1,2,3,4)] %>% 
+  select_if(is.numeric) %>%
+  map_df(~ broom::tidy(kruskal.test(. ~ as.factor(nucldata_cleaned_full$species_name))), .id = 'var')
+res_spec$p.value = p.adjust(res_spec$p.value, method = 'bonferroni')
+```
+
+Subset of our data with statistically significant data.
+```{r}
+res_prep_sig <- res_prep %>% filter(res_prep$p.value < 0.05)
+res_spec_sig <- res_spec %>% filter(res_spec$p.value < 0.05)
+```
+
+Top 25 most significant differences in preparation
+```{r}
+myTable <- tableGrob(
+  as.data.frame(res_prep_sig)[0:25,], 
+  rows = NULL, 
+  theme = ttheme_default(8, padding = unit(c(0,2),"mm"))
+)
+
+grid.newpage()
+grid.draw(myTable)
+```
+
+
+Top 25 most significant differences in species
+```{r}
+myTable <- tableGrob(
+  as.data.frame(res_spec_sig[order(res_spec_sig$p.value),])[0:25,], 
+  rows = NULL, 
+  theme = ttheme_default(8, padding = unit(c(0,2),"mm"))
+)
+
+grid.newpage()
+grid.draw(myTable)
+```
+
+

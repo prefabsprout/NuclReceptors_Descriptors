@@ -12,12 +12,18 @@ Data for the project were obtained from ProteinDataBank (www.rcsb.org). It is 15
 Data preprocessing was performed by Schrodinger 2017-1. Library for calculation of descriptors was written using Python 3 and Bio.PDB package; information about secondary structures was gained using DSSP algorithm. Validation was performed by PyMOL.
 Then the implemented descriptors' calculations were calculated for preprocessed and unprocessed structures and k-means clustering of the results was performed, visualisation was made by tSNE method.
 Statistical analysis of obtained data was made on R, using such methods as nonparametric Wilcoxon test and Kruskal test both with Bonferroni correction.
-### System requirements for developed software
-For our project we used Python 3.6 and its libraries biopython 1.76, numpy 1.18.4, pandas 0.25.2. Also script requires presence of folder with PDB-files, that should be calculated. 
-Before running the script user should enter the path to the folder with PDB-files, name of output csv-file, numbers of charge clamp residues, name of analysed species and status of PDB-files preprocessing (0 - unprocessed, 1 - preprocessed) in the end of code. After that code is running.
+### Usage
+To calculate most descriptors (except ligand descriptors and sandwitch layer descriptor, you need to launch them separately) you need to use ```Calculate_Descriptors.py```. Before running the script user should enter the path to the folder with PDB-files, name of output csv-file, numbers of charge clamp residues, name of analysed species and status of PDB-files preprocessing (0 - unprocessed, 1 - preprocessed) in the end of code. After that code is running.
+### Recomended system requirements for developed software
+- Ubuntu 18.04
+- Python 3.6
+- Biopython 1.76
+- Numpy 1.18.4
+- Sympy 1.6
+- Pandas 0.25.2
 ### Example of output file
 The result of running is csv-table with names of descriptors in columns and PDB-structures in rows.
-Example of output-file is [here](https://drive.google.com/file/d/1QU5r8OjGExuHJtQrdT7cawF_yZN8bV0N/view?usp=sharing).
+You can find result csv-tables in ```Analysis/data```.
 ### References
 1. rcsb.org. H.M. Berman, J. Westbrook, Z. Feng, G. Gilliland, T.N. Bhat, H. Weissig, I.N. Shindyalov, P.E. Bourne.
 (2000) The Protein Data Bank Nucleic Acids Research, 28: 235-242.

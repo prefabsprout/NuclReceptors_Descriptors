@@ -3,11 +3,14 @@ import pandas as pd
 
 
 def ch_clamp_dist(pdb_file, charge_clamps):
-
+    """Calculation of distance between charge clamp residues"""
+    
+    # getting data from pdb-file
     p = PDBParser()
     structure = p.get_structure('protein', pdb_file)
     chain = structure[0]['A']
-
+    
+    # extracting vectors of coordinates for every residue in charge clamp
     clamp_vectors = {}
 
     for res in chain:
@@ -18,12 +21,14 @@ def ch_clamp_dist(pdb_file, charge_clamps):
     table = {}
     for elem in range(len(clamp_vectors)):
         table[f'{charge_clamps[elem]}-{charge_clamps[elem-1]}'] = clamp_vectors[charge_clamps[elem]] - clamp_vectors[charge_clamps[elem-1]]
-
+    
+    # calculation of distance between charge clamp residues
     dist = {}
 
     for line in table:
         dist[line] = (table[line][0]**2 + table[line][1]**2 + table[line][2]**2) ** 0.5
 
     clamp_dist = pd.Series(dist).to_csv('clamp_dist_'+pdb_file+'.csv')
-
+    
+    # return csv with distances
     return clamp_dist 

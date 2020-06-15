@@ -244,10 +244,3 @@ if __name__ == '__main__':
         df_concat.to_csv(db_output)
 
     calc_all(args.input, args.output, args.clamp, args.species, args.prep)
-# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Danio_rerio calc_results_danio.csv --clamp-resid 274 292 446 --species zebrafish --prepared 0
-# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Homo_sapiens calc_results_homosap.csv --clamp-resid 246 264 420 --species human --prepared 0
-# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Rattus_norvegicus calc_results_rattus.csv --clamp-resid 242 260 416 --species rat --prepared 0
-
-# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Danio_rerio calc_results_danio_prep.csv --clamp-resid 274 292 446 --species zebrafish --prepared 1
-# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Homo_sapiens calc_results_homosap_prep.csv --clamp-resid 246 264 420 --species human --prepared 1
-# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Rattus_norvegicus calc_results_rattus_prep.csv --clamp-resid 242 260 416 --species rat --prepared 1

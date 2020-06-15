@@ -62,7 +62,6 @@ def COM_helix(pdb_file):
         for elem in helix_content:
             for res in elem:
                 residue = chain[res]
-
                 for atom in residue.get_atoms():
                     weight = ATOMIC_WEIGHTS[atom.get_name()[0]]
                     helix_mass += weight
@@ -72,3 +71,4 @@ def COM_helix(pdb_file):
             hel_COM.append(helix_com)
 
     return hel_COM
+COM_helix('/home/stepan/NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Homo_sapiens/1db1.pdb')

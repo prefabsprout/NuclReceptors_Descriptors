@@ -11,10 +11,44 @@ from clamp_dist import ch_clamp_dist
 from clamp_angle import ch_clamp_angles
 import os
 import pandas as pd
+import argparse
 
 
 if __name__ == '__main__':
-    # clamp_resid - residues which form a clamp (you need to get it from literature sources
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(dest='input',
+                        # required=True,
+                        type=str,
+                        help="Input directory with pdb files")
+
+    parser.add_argument(dest='output',
+                        # required=True,
+                        type=str,
+                        help="Output csv file with results of calculations")
+
+    parser.add_argument('--clamp-resid',
+                        dest='clamp',
+                        required=True,
+                        nargs='+',
+                        type=int,
+                        help="Number of residues which form a clamp (you need to get it from literature sources")
+
+    parser.add_argument('--species',
+                        dest='species',
+                        required=True,
+                        type=str,
+                        help="Species from which protein was obtained")
+
+    parser.add_argument('--prepared',
+                        dest='prep',
+                        required=True,
+                        type=int,
+                        choices=[0,1],
+                        help="Output csv file with results of calculations")
+    args = parser.parse_args()
+
+    # clamp_resid - residues which form a clamp (you need to get it from literature sources)
     # species - fill species_name column
     # prep - fill preparation status of your PDB file
     def calc_all(dir, db_output, clamp_resid, species, prep):
@@ -209,17 +243,11 @@ if __name__ == '__main__':
 
         df_concat.to_csv(db_output)
 
+    calc_all(args.input, args.output, args.clamp, args.species, args.prep)
+# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Danio_rerio calc_results_danio.csv --clamp-resid 274 292 446 --species zebrafish --prepared 0
+# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Homo_sapiens calc_results_homosap.csv --clamp-resid 246 264 420 --species human --prepared 0
+# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Rattus_norvegicus calc_results_rattus.csv --clamp-resid 242 260 416 --species rat --prepared 0
 
-    calc_all("raw_data/VDR_PDB/Danio rerio", "calc_results_danio.csv", [274, 292, 446],
-             "zebrafish",0)
-    calc_all("raw_data/VDR_PDB/Homo sapiens", "calc_results_homosap.csv", [246, 264, 420],
-             "human",0)
-    calc_all("raw_data/VDR_PDB/Rattus norvegicus", "calc_results_rattus.csv", [242, 260, 416],
-             "rat",0)
-
-    calc_all("raw_data/VDR_PDB_prep/Danio rerio", "calc_results_danio_prep.csv",[274, 292, 446],
-             "zebrafish",1)
-    calc_all("raw_data/VDR_PDB_prep/Homo sapiens", "calc_results_homosap_prep.csv",[246, 264, 420],
-             "human",1)
-    calc_all("raw_data/VDR_PDB_prep/Rattus norvegicus", "calc_results_rattus_prep.csv",[242, 260, 416],
-             "rat",1)
+# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Danio_rerio calc_results_danio_prep.csv --clamp-resid 274 292 446 --species zebrafish --prepared 1
+# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Homo_sapiens calc_results_homosap_prep.csv --clamp-resid 246 264 420 --species human --prepared 1
+# python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Rattus_norvegicus calc_results_rattus_prep.csv --clamp-resid 242 260 416 --species rat --prepared 1

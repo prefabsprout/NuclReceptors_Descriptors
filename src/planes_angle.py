@@ -50,15 +50,15 @@ def COM_for_planes(pdb_file, helices): # Helices - list of layer's helices
 
                 for atom in residue.get_atoms():
                     weight = ATOMIC_WEIGHTS[atom.get_name()[0]]
-                    helix_mass += weight # Calculate helix total mass
-                    # Calculate product of atom coordinate and weight
+                    helix_mass += weight
                     weighted_coord.append([coord * weight for coord in list(atom.get_coord())])
-            # Calculate helix center of mass
+
             helix_com.append([coord / helix_mass for coord in np.sum(weighted_coord, axis=0)])
             hel_COM.append(helix_com)
     return hel_COM
 
-# l1, l2, l3 - lists which contain helices numbers for every "sandwich layer" of VDR structure
+# l1, l2, l3 - lists which contain nested lists with numbers of border residues
+# for every helix which forms "sandwich layer" of VDR structure
 def plane_angle(pdb_file, l1, l2, l3):
     """Calculate angles between every layer"""
     COM_l1 = COM_for_planes(pdb_file, l1)
@@ -82,5 +82,11 @@ def plane_angle(pdb_file, l1, l2, l3):
     third_layer = Plane(*args)
 
     # Calculate and return angle between every layers
-    return [degrees(N(first_layer.angle_between(second_layer))), degrees(N(first_layer.angle_between(third_layer))),
+    return [degrees(N(first_layer.angle_between(second_layer))),
+            degrees(N(first_layer.angle_between(third_layer))),
             degrees(second_layer.angle_between(third_layer))]
+
+# Test run
+print(plane_angle('/home/stepan/NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Homo_sapiens/1db1.pdb',
+                  [[126, 140], [217, 261], [268, 297]],
+                  [[300, 316], [319, 350], [358, 361]], [[301, 317], [320, 351], [359, 362]]))

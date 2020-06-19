@@ -14,7 +14,7 @@ Then the implemented descriptors' calculations were calculated for preprocessed 
 Statistical analysis of obtained data was made on R, using such methods as nonparametric Wilcoxon test and Kruskal test both with Bonferroni correction.
 ### Usage
 To calculate most descriptors (except ligand descriptors and sandwitch layer descriptor, user need to launch them separately) it's convenient to use ```Calculate_Descriptors.py```. For reproducibility of the analysis results we can offer the user to try following steps. 
-1. Clone repository to personal mashine using ```git clone```
+1. Clone repository by using ```git clone```
 
 ```git clone https://github.com/prefabsprout/NuclReceptors_Descriptors.git```
 
@@ -30,7 +30,7 @@ Examples:
 
 ```python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Rattus_norvegicus calc_results_rattus_prep.csv --clamp-resid 242 260 416 --species rat --prepared 1```
 
-Currently, the script for calculating the angle between sandwich layers and for calculation of solvent-accessibility area per helix need to be improved in order to facilitate user interaction with the script. Also ligand descriptors need some improvement for correct work.
+Currently, the script for calculating the angle between sandwich layers, ligand descriptors and for calculation of solvent-accessibility area per helix need to be improved in order to facilitate user interaction with the script. 
 ### Recomended system requirements for developed software
 - Ubuntu 18.04
 - Python 3.6

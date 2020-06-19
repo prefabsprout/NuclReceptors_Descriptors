@@ -13,7 +13,24 @@ Data preprocessing was performed by Schrodinger 2017-1. Library for calculation 
 Then the implemented descriptors' calculations were calculated for preprocessed and unprocessed structures and k-means clustering of the results was performed, visualisation was made by tSNE method.
 Statistical analysis of obtained data was made on R, using such methods as nonparametric Wilcoxon test and Kruskal test both with Bonferroni correction.
 ### Usage
-To calculate most descriptors (except ligand descriptors and sandwitch layer descriptor, you need to launch them separately) you need to use ```Calculate_Descriptors.py```. Before running the script user should enter the path to the folder with PDB-files, name of output csv-file, numbers of charge clamp residues, name of analysed species and status of PDB-files preprocessing (0 - unprocessed, 1 - preprocessed) in the end of code. After that code is running.
+To calculate most descriptors (except ligand descriptors and sandwitch layer descriptor, user need to launch them separately) it's convenient to use ```Calculate_Descriptors.py```. For reproducibility of the analysis results we can offer the user to try following steps. 
+1. Clone repository to personal mashine using ```git clone```
+
+git clone https://github.com/prefabsprout/NuclReceptors_Descriptors.git
+
+2. Then run the script from terminal. In general case command for running looks like that:
+
+python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py {folder with PDB-files for species of interest} {name of output csv-file} —clamp-resid {three integers with - charge clamp residue numbers} —species {name of species: zebrafish/human/rat} —prepared {0 - unprocessed, 1 - preprocessed}
+
+Examples:
+
+python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Danio_rerio calc_results_danio.csv --clamp-resid 274 292 446 --species zebrafish --prepared 0
+
+python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Homo_sapiens calc_results_homosap_prep.csv --clamp-resid 246 264 420 --species human --prepared 1
+
+python3 ./NuclReceptors_Descriptors/src/Calculate_Descriptors.py ./NuclReceptors_Descriptors/src/raw_data/VDR_PDB/Rattus_norvegicus calc_results_rattus_prep.csv --clamp-resid 242 260 416 --species rat --prepared 1
+
+Currently, the script for calculating the angle between sandwich layers and for calculation of solvent-accessibility area per helix need to be improved in order to facilitate user interaction with the script.
 ### Recomended system requirements for developed software
 - Ubuntu 18.04
 - Python 3.6
@@ -23,7 +40,7 @@ To calculate most descriptors (except ligand descriptors and sandwitch layer des
 - Pandas 0.25.2
 ### Example of output file
 The result of running is csv-table with names of descriptors in columns and PDB-structures in rows.
-You can find result csv-tables in ```Analysis/data```.
+Resulting csv-tables can be found in ```Analysis/data```.
 ### References
 1. rcsb.org. H.M. Berman, J. Westbrook, Z. Feng, G. Gilliland, T.N. Bhat, H. Weissig, I.N. Shindyalov, P.E. Bourne.
 (2000) The Protein Data Bank Nucleic Acids Research, 28: 235-242.
